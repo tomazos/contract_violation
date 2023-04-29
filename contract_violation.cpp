@@ -68,7 +68,7 @@ const char *contract_violation::what() const noexcept {
       ((detail::contract_violation_impl *)storage)->what_generated;
   if (what_generated) return what_msg;
   char *what_cursor = what_msg;
-  char *what_end = storage + size;
+  char *what_end = storage + size -1;
   auto write_bytes = [&](const char *in, size_t len) {
     const size_t available = what_end - what_cursor;
     if (available < len) len = available;
@@ -123,6 +123,8 @@ const char *contract_violation::what() const noexcept {
       break;
   }
   write_str(source_code());
+  *what_cursor = 0; // null-terminator
+
   what_generated = true;
   return what_msg;
 }
