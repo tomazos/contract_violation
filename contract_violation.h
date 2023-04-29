@@ -33,7 +33,7 @@ class contract_violation : public std::exception {
   // or the empty string if it is not available.
   const char *source_code() const noexcept;
 
-  const std::source_location& source_location() const noexcept;
+  const std::source_location &source_location() const noexcept;
 
  private:
   static constexpr size_t size = 512;

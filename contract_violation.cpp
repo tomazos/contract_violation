@@ -22,7 +22,8 @@ struct contract_violation_impl {
 }  // namespace detail
 
 contract_violation::contract_violation()
-  : contract_violation(std::contract_kind::empty, "", std::source_location()) {}
+    : contract_violation(std::contract_kind::empty, "",
+                         std::source_location()) {}
 
 contract_violation::contract_violation(
     std::contract_kind kind, const char *source_code,
@@ -75,27 +76,26 @@ const char *contract_violation::what() const noexcept {
     what_cursor += len;
   };
   auto write_str = [&](const char *in) { write_bytes(in, std::strlen(in)); };
-  auto write_num =
-      [&](int num) {
-        if (num == 0) {
-          write_bytes("0", 1);
-          return;
-        }
-        size_t ndigits = 0;
-        int remainder = num;
-        while (remainder > 0) {
-          ndigits++;
-          remainder /= 10;
-        }
-        const size_t available = what_end - what_cursor;
-        if (ndigits > available) return;
-        remainder = num;
-        for (size_t i = 0; i < ndigits; i++) {
-          what_cursor[ndigits - i - 1] = char(int('0') + (remainder % 10));
-          remainder /= 10;
-        }
-        what_cursor += ndigits;
-      };
+  auto write_num = [&](int num) {
+    if (num == 0) {
+      write_bytes("0", 1);
+      return;
+    }
+    size_t ndigits = 0;
+    int remainder = num;
+    while (remainder > 0) {
+      ndigits++;
+      remainder /= 10;
+    }
+    const size_t available = what_end - what_cursor;
+    if (ndigits > available) return;
+    remainder = num;
+    for (size_t i = 0; i < ndigits; i++) {
+      what_cursor[ndigits - i - 1] = char(int('0') + (remainder % 10));
+      remainder /= 10;
+    }
+    what_cursor += ndigits;
+  };
 
   std::source_location location = source_location();
 
@@ -135,7 +135,8 @@ const char *contract_violation::source_code() const noexcept {
   return ((detail::contract_violation_impl *)storage)->source_code;
 }
 
-const std::source_location& contract_violation::source_location() const noexcept {
+const std::source_location &contract_violation::source_location()
+    const noexcept {
   return ((detail::contract_violation_impl *)storage)->source_location;
 }
 
