@@ -1,6 +1,7 @@
 #include "contract_violation.h"
 
 #include <cassert>
+#include <iostream>
 #include <string>
 
 int main() {
@@ -42,4 +43,7 @@ int main() {
   assert(v5.kind() == std::contract_kind::precondition);
   assert(std::string(v5.source_code()) == "x + y > 2");
   assert(v5.source_location().line() == source_location.line());
+
+  // .what()
+  std::cout << v5.what() << std::endl;
 }
