@@ -21,6 +21,9 @@ struct contract_violation_impl {
 
 }  // namespace detail
 
+contract_violation::contract_violation()
+  : contract_violation(std::contract_kind::empty, "", std::source_location()) {}
+
 contract_violation::contract_violation(
     std::contract_kind kind, const char *source_code,
     const std::source_location &source_location) {
