@@ -41,6 +41,8 @@ contract_violation &contract_violation::operator=(
 }
 
 const char *contract_violation::what() const noexcept {
+  std::lock_guard lock(((detail::contract_violation_impl *)storage)->mu);
+
   char *what_msg = storage + sizeof(detail::contract_violation_impl);
   bool &what_generated =
       ((detail::contract_violation_impl *)storage)->what_generated;

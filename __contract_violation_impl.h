@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring>
+#include <mutex>
 
 #include "contract_violation.h"
 
@@ -19,6 +20,42 @@ struct contract_violation_impl {
   const char* source_code;
   std::source_location source_location;
   bool what_generated = false;
+  std::mutex mu;
+
+  contract_violation_impl(const contract_violation_impl& that) :
+     kind(that.kind),
+     source_code(that.source_code),
+     source_location(that.source_location),
+     what_generated(false),
+     mu()
+  {}
+
+  contract_violation_impl(contract_violation_impl&& that) :
+     kind(std::move(that.kind)),
+     source_code(std::move(that.source_code)),
+     source_location(std::move(that.source_location)),
+     what_generated(false),
+     mu()
+  {}
+
+  contract_violation_impl& operator=(const contract_violation_impl& that)
+  {
+    kind = that.kind;
+    source_code = that.source_code;
+    source_location = that.source_location;
+    what_generated = false;
+    return *this;
+  }
+
+
+  contract_violation_impl& operator=(contract_violation_impl&& that)
+  {
+    kind = std::move(that.kind);
+    source_code = std::move(that.source_code);
+    source_location = std::move(that.source_location);
+    what_generated = false;
+    return *this;
+  }
 };
 
 }  // namespace detail
