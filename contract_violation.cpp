@@ -2,35 +2,13 @@
 
 #include <cstring>
 
+#include "__contract_violation_impl.h"
+
 namespace std {
-inline namespace P2854 {
+inline namespace P2853 {
 
-namespace detail {
-
-struct contract_violation_impl {
-  contract_violation_impl(std::contract_kind kind, const char *source_code,
-                          const std::source_location &source_location) noexcept
-      : kind(kind),
-        source_code(source_code),
-        source_location(source_location) {}
-  std::contract_kind kind;
-  const char *source_code;
-  std::source_location source_location;
-  bool what_generated = false;
-};
-
-}  // namespace detail
-
-contract_violation::contract_violation()
-    : contract_violation(std::contract_kind::empty, "",
-                         std::source_location()) {}
-
-contract_violation::contract_violation(
-    std::contract_kind kind, const char *source_code,
-    const std::source_location &source_location) {
-  static_assert(sizeof(detail::contract_violation_impl) + 1 <= size);
-  new (storage)
-      detail::contract_violation_impl(kind, source_code, source_location);
+contract_violation::contract_violation() : contract_violation(__noinit) {
+  __contract_violation_builder::default_construct(this);
 }
 
 contract_violation::contract_violation(
@@ -68,7 +46,7 @@ const char *contract_violation::what() const noexcept {
       ((detail::contract_violation_impl *)storage)->what_generated;
   if (what_generated) return what_msg;
   char *what_cursor = what_msg;
-  char *what_end = storage + size -1;
+  char *what_end = storage + size - 1;
   auto write_bytes = [&](const char *in, size_t len) {
     const size_t available = what_end - what_cursor;
     if (available < len) len = available;
@@ -123,7 +101,7 @@ const char *contract_violation::what() const noexcept {
       break;
   }
   write_str(source_code());
-  *what_cursor = 0; // null-terminator
+  *what_cursor = 0;  // null-terminator
 
   what_generated = true;
   return what_msg;
@@ -142,5 +120,5 @@ const std::source_location &contract_violation::source_location()
   return ((detail::contract_violation_impl *)storage)->source_location;
 }
 
-}  // namespace P2854
+}  // namespace P2853
 }  // namespace std

@@ -5,7 +5,7 @@
 #include <source_location>
 
 namespace std {
-inline namespace P2854 {
+inline namespace P2853 {
 
 enum class contract_kind { empty, precondition, incondition, postcondition };
 enum class contract_resolution { abort_program };
@@ -14,11 +14,6 @@ class contract_violation : public std::exception {
  public:
   contract_violation();
 
-  // Precond: source_code shall point to a NTBS of static storage duration
-  // Precond: contract_kind shall be exactly one of precondition, incondition or
-  // postcondition
-  contract_violation(std::contract_kind contract_kind, const char *source_code,
-                     const std::source_location &source_location);
   contract_violation(const contract_violation &) noexcept;
   contract_violation(contract_violation &&) noexcept;
   ~contract_violation();
@@ -38,9 +33,14 @@ class contract_violation : public std::exception {
  private:
   static constexpr size_t size = 512;
   alignas(std::max_align_t) mutable char storage[size];
+
+  static constexpr struct __noinit_t {
+  } __noinit = {};
+  contract_violation(__noinit_t) {}
+  friend struct __contract_violation_builder;
 };
 
-}  // namespace P2854
+}  // namespace P2853
 }  // namespace std
 
 std::contract_resolution handle_contract_violation(

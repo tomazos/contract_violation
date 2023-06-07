@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 
+#include "__contract_violation_impl.h"
+
 int main() {
   // default construction
   std::contract_violation v0;
@@ -11,15 +13,15 @@ int main() {
 
   std::source_location source_location = std::source_location::current();
 
-  // memberwise construction
-  std::contract_violation v1(std::contract_kind::precondition, "x + y > 2",
-                             source_location);
-  assert(v1.kind() == std::contract_kind::precondition);
-  assert(std::string(v1.source_code()) == "x + y > 2");
-  assert(v1.source_location().line() == source_location.line());
+  // memberwise construction (private implementation)
+  std::__contract_violation_builder v1(std::contract_kind::precondition,
+                                       "x + y > 2", source_location);
+  assert(v1.cv.kind() == std::contract_kind::precondition);
+  assert(std::string(v1.cv.source_code()) == "x + y > 2");
+  assert(v1.cv.source_location().line() == source_location.line());
 
   // copy construction
-  std::contract_violation v2(v1);
+  std::contract_violation v2(v1.cv);
   assert(v2.kind() == std::contract_kind::precondition);
   assert(std::string(v2.source_code()) == "x + y > 2");
   assert(v2.source_location().line() == source_location.line());
